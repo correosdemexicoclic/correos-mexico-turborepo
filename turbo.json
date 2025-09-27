@@ -4,8 +4,19 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**"]
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env*",
+        "apps/backend/package.json",
+        "apps/backend/tsconfig.json",
+        "apps/backend/src/**"
+      ],
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**",
+        "dist/**",
+        "!.dist/**/node_modules/**"
+      ]
     },
     "lint": {
       "dependsOn": ["^lint"]
