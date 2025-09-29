@@ -1,34 +1,67 @@
 // welcome.tsx
-import React, { useCallback, useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { useNavigation, useFocusEffect, NavigationProp } from '@react-navigation/native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import React, { useCallback, useState, useEffect, useRef } from 'react';
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  Animated,
+} from 'react-native';
+import {
+  useNavigation,
+  useFocusEffect,
+  NavigationProp,
+} from '@react-navigation/native';
 
-// Replace 'RootStackParamList' with your actual param list type
 type RootStackParamList = {
   SignUp: undefined;
   SignIn: undefined;
-  // add other routes here
 };
 
 export default function WelcomeScreen() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [animationKey, setAnimationKey] = useState(0);
 
-  // Reinicia la animación cada vez que se enfoca la pantalla
+  const fadeAnim = useRef(new Animated.Value(0)).current; // para opacidad
+  const translateY = useRef(new Animated.Value(-50)).current; // para simular "down"
+
   useFocusEffect(
     useCallback(() => {
       setAnimationKey(prev => prev + 1);
     }, [])
   );
 
+  useEffect(() => {
+    fadeAnim.setValue(0);
+    translateY.setValue(-50);
+
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 1000,
+        useNativeDriver: true,
+      }),
+      Animated.timing(translateY, {
+        toValue: 0,
+        duration: 1000,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [animationKey]);
+
   return (
     <View style={styles.container}>
       <Animated.Image
         key={animationKey}
-        entering={FadeInDown.duration(1000)}
         source={require('../../assets/logo3.png')}
-        style={styles.logo}
+        style={[
+          styles.logo,
+          {
+            opacity: fadeAnim,
+            transform: [{ translateY }],
+          },
+        ]}
         resizeMode="contain"
       />
 
@@ -47,7 +80,13 @@ export default function WelcomeScreen() {
 
       <Text style={styles.loginText}>
         ¿Ya tienes una cuenta?
-        <Text style={styles.link} onPress={() => navigation.navigate('SignIn')}> Ingresa aquí</Text>
+        <Text
+          style={styles.link}
+          onPress={() => navigation.navigate('SignIn')}
+        >
+          {' '}
+          Ingresa aquí
+        </Text>
       </Text>
     </View>
   );

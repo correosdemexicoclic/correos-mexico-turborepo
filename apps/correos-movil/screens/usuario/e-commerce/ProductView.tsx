@@ -1,4 +1,4 @@
-import * as React from "react";
+/*import * as React from "react";
 import * as ImagePicker from 'expo-image-picker';
 import type { ImagePickerAsset } from 'expo-image-picker';
 import {
@@ -405,8 +405,8 @@ function ProductView() {
             <Text style={styles.addButtonText}>{inCart ? 'Quitar del carrito' : 'Añadir al carrito'}</Text>
           </TouchableOpacity>
 
-          {/* ====== Reseñas con imágenes ====== */}
-          {!!product.reviews.length && (
+          {/* ====== Reseñas con imágenes ====== */
+          /*{!!product.reviews.length && (
             <View style={{ marginBottom: moderateScale(24) }}>
               <Text style={styles.recommendedTitle}>Opiniones</Text>
 
@@ -479,8 +479,8 @@ function ProductView() {
           </View>
         </View>
 
-        {/* ====== LIGHTBOX ====== */}
-        <Modal visible={lightboxVisible} transparent animationType="fade" onRequestClose={closeLightbox}>
+        {/* ====== LIGHTBOX ====== */
+        /*<Modal visible={lightboxVisible} transparent animationType="fade" onRequestClose={closeLightbox}>
           <View style={styles.lightboxBackdrop}>
             <Image
               source={{ uri: lightboxImages[lightboxIndex] || DEFAULT_IMAGE }}
@@ -780,4 +780,70 @@ const reviewStyles = StyleSheet.create({
   btn: { paddingVertical: 10, paddingHorizontal: 14, borderRadius: 8 },
 });
 
-export default ProductView;
+export default ProductView; */
+
+// ProductView.tsx
+import React from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  ScrollView,
+  ActivityIndicator,
+} from 'react-native';
+import { useRoute, useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../schemas/schemas';
+
+type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'ProductView'>;
+
+export default function ProductView() {
+  const route = useRoute<any>();
+  const navigation = useNavigation<NavigationProp>();
+
+  const { id } = route.params || {};
+
+  // Aquí puedes manejar el estado del producto
+  // const [product, setProduct] = React.useState<Product | null>(null);
+  // const [loading, setLoading] = React.useState(true);
+  // const [error, setError] = React.useState<string | null>(null);
+
+  return (
+    <ScrollView style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Detalle del Producto</Text>
+        <Text style={styles.subtitle}>ID: {id}</Text>
+      </View>
+
+      <View style={styles.body}>
+        <Text>Aquí irá la información del producto...</Text>
+      </View>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  header: {
+    padding: 16,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#ddd',
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#333',
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 4,
+  },
+  body: {
+    padding: 16,
+  },
+});

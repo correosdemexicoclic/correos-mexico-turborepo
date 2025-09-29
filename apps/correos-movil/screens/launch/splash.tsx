@@ -3,33 +3,32 @@ import {
   View,
   StyleSheet,
   StatusBar,
-  Animated as RNAnimated,
+  Animated,
   Image,
 } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
-import Animated, {
-  FadeInDown,
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-} from 'react-native-reanimated';
 
 type RootStackParamList = {
   Welcome: undefined;
-  // Add other routes here if needed
 };
 
 export default function SplashScreen() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  const fadeAnim = useRef(new RNAnimated.Value(1)).current;
-  const scale = useSharedValue(1);
+  const fadeAnim = useRef(new Animated.Value(1)).current;
+  const scaleAnim = useRef(new Animated.Value(1)).current;
   const [bgLoaded, setBgLoaded] = useState(false);
 
   useEffect(() => {
     if (bgLoaded) {
-      scale.value = withTiming(1.1, { duration: 1000 });
+      // Animación de escala
+      Animated.timing(scaleAnim, {
+        toValue: 1.1,
+        duration: 1000,
+        useNativeDriver: true,
+      }).start();
 
-      RNAnimated.timing(fadeAnim, {
+      // Animación de desvanecimiento y luego navegación
+      Animated.timing(fadeAnim, {
         toValue: 0,
         duration: 1000,
         delay: 2500,
@@ -40,14 +39,8 @@ export default function SplashScreen() {
     }
   }, [bgLoaded]);
 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: scale.value }],
-    };
-  });
-
   return (
-    <RNAnimated.View style={[styles.container, { opacity: fadeAnim }]}>
+    <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
       <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
 
       {/* Fondo */}
@@ -57,7 +50,7 @@ export default function SplashScreen() {
           style={styles.backgroundImage}
           resizeMode="cover"
           blurRadius={3}
-          onLoadEnd={() => setBgLoaded(true)} // <- Solo cuando termina de cargar
+          onLoadEnd={() => setBgLoaded(true)} // Solo cuando termina de cargar
         />
         <View style={styles.whiteOverlay} />
       </View>
@@ -65,11 +58,15 @@ export default function SplashScreen() {
       {/* Logo con animación */}
       <Animated.Image
         source={require('../../assets/logo2.png')}
-        style={[styles.logo, animatedStyle]}
-        entering={FadeInDown.duration(800)}
+        style={[
+          styles.logo,
+          {
+            transform: [{ scale: scaleAnim }],
+          },
+        ]}
         resizeMode="contain"
       />
-    </RNAnimated.View>
+    </Animated.View>
   );
 }
 

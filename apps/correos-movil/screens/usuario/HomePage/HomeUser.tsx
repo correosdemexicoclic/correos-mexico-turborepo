@@ -1,7 +1,5 @@
 import { View, Text, ScrollView, Image, TouchableOpacity, StyleSheet, Dimensions, Animated, LayoutChangeEvent, ActivityIndicator, TextInput } from 'react-native'
 import * as React from 'react'
-import { useSharedValue } from "react-native-reanimated";
-import Carousel, { ICarouselInstance, Pagination } from "react-native-reanimated-carousel";
 import { moderateScale } from 'react-native-size-matters';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { ShoppingBag, Headset, Heart, Search } from 'lucide-react-native';
@@ -198,22 +196,22 @@ export default function HomeUser() {
     }, [])
   );
 
-  const progress = useSharedValue<number>(0);
+  //const progress = useSharedValue<number>(0);
 
-  const renderItem = ({ item }) => (
+  {/*const renderItem = ({ item }) => (
     <View style={[styles.itemContainer, { backgroundColor: item }]}>
       <Image source={item.image} style={styles.image} />
     </View>
-  );
+  );*/}
 
-  const ref = React.useRef<ICarouselInstance>(null);
+  //const ref = React.useRef<ICarouselInstance>(null);
 
-  const onPressPagination = (index: number) => {
+  {/*const onPressPagination = (index: number) => {
     ref.current?.scrollTo({
       count: index - progress.value,
       animated: true,
     });
-  };
+  };*/}
 
   return (
     <View>
@@ -260,8 +258,8 @@ export default function HomeUser() {
         </View>
 
         <CorreosClicButton />
-
-        <View id="carousel-component" dataSet={{ kind: "basic-layouts", name: "parallax" }}>
+        
+        {/*<View id="carousel-component" dataSet={{ kind: "basic-layouts", name: "parallax" }}>
           <Carousel
             autoPlayInterval={5000}
             autoPlay={true}
@@ -302,7 +300,7 @@ export default function HomeUser() {
             horizontal
             onPress={onPressPagination}
           />
-        </View>
+        </View> */}
 
         <View style={styles.categoriesContainer}>
           <Text style={styles.textCategories}>Categorías</Text>
@@ -357,7 +355,7 @@ export default function HomeUser() {
           </View>
         </View>
 
-        <View id="carousel-component" dataSet={{ kind: "basic-layouts", name: "parallax" }}>
+        {/*<View id="carousel-component" dataSet={{ kind: "basic-layouts", name: "parallax" }}>
           <Carousel
             autoPlayInterval={5000}
             autoPlay={true}
@@ -398,7 +396,7 @@ export default function HomeUser() {
             horizontal
             onPress={onPressPagination}
           />
-        </View>
+        </View>*/}
 
         <View style={styles.featuredProductContainer}>
           <View style={styles.textFeaturedProductContainer}>

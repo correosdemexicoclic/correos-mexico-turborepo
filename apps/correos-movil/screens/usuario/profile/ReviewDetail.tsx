@@ -1,4 +1,4 @@
-import React from 'react';
+/*import React from 'react';
 import {
   View, Text, Image, StyleSheet, Dimensions,
   TouchableOpacity, ScrollView, StatusBar, Platform
@@ -58,8 +58,8 @@ export default function ReviewDetail() {
     <View style={{ flex: 1, backgroundColor: BG }}>
       <StatusBar barStyle="light-content" backgroundColor={BRAND_PINK} />
 
-      {/* Header rosa con safe-area y título centrado */}
-      <View style={[styles.safeHeader]}>
+      {/* Header rosa con safe-area y título centrado */
+      /*<View style={[styles.safeHeader]}>
         <View style={styles.headerRow}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerIconArea}>
             <FontAwesomeIcon icon={faArrowLeft} size={18} color="#fff" />
@@ -67,13 +67,13 @@ export default function ReviewDetail() {
 
           <Text style={styles.headerTitle}>Opiniones con fotos</Text>
 
-          {/* Spacer derecho del mismo ancho que el botón de atrás para centrar el título */}
-          <View style={styles.headerIconArea} />
+          {/* Spacer derecho del mismo ancho que el botón de atrás para centrar el título */
+          /*<View style={styles.headerIconArea} />
         </View>
       </View>
 
-      {/* Zona de imagen (blanco) */}
-      <View style={styles.carouselContainer}>
+      {/* Zona de imagen (blanco) */
+      /*<View style={styles.carouselContainer}>
         <Carousel
           ref={ref}
           width={screenWidth}
@@ -88,8 +88,8 @@ export default function ReviewDetail() {
           }}
         />
 
-        {/* Contador 1 / N */}
-        <View style={styles.counterBox}>
+        {/* Contador 1 / N */
+        /*<View style={styles.counterBox}>
           <Text style={styles.counterText}>{`${index + 1} / ${data.length}`}</Text>
         </View>
 
@@ -122,8 +122,8 @@ export default function ReviewDetail() {
         )}
       </View>
 
-      {/* Panel inferior BLANCO (sin “Es útil” ni menú) */}
-      <ScrollView style={styles.bottomPanel} contentContainerStyle={{ paddingBottom: 24 }}>
+      {/* Panel inferior BLANCO (sin “Es útil” ni menú) */
+      /*<ScrollView style={styles.bottomPanel} contentContainerStyle={{ paddingBottom: 24 }}>
         
 
         <View style={styles.authorRow}>
@@ -215,4 +215,4 @@ const styles = StyleSheet.create({
   authorRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 6, marginBottom: 14 },
   avatar: { width: 32, height: 32, borderRadius: 16, backgroundColor: '#eee' },
   authorName: { color: TEXT, fontWeight: '600' },
-});
+}); */
