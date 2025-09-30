@@ -6,35 +6,31 @@ import {
   Animated,
   Image,
 } from 'react-native';
-import { useNavigation, NavigationProp } from '@react-navigation/native';
-
-type RootStackParamList = {
-  Welcome: undefined;
-};
+import { useNavigation } from '@react-navigation/native';
 
 export default function SplashScreen() {
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const navigation = useNavigation();
   const fadeAnim = useRef(new Animated.Value(1)).current;
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const [bgLoaded, setBgLoaded] = useState(false);
 
   useEffect(() => {
     if (bgLoaded) {
-      // Animación de escala
+      // Animar el scale del logo
       Animated.timing(scaleAnim, {
         toValue: 1.1,
         duration: 1000,
         useNativeDriver: true,
       }).start();
 
-      // Animación de desvanecimiento y luego navegación
+      // Animar el fade out para la transición
       Animated.timing(fadeAnim, {
         toValue: 0,
         duration: 1000,
         delay: 2500,
         useNativeDriver: true,
       }).start(() => {
-        navigation.navigate('Welcome');
+        navigation.replace('Welcome');
       });
     }
   }, [bgLoaded]);
@@ -50,7 +46,7 @@ export default function SplashScreen() {
           style={styles.backgroundImage}
           resizeMode="cover"
           blurRadius={3}
-          onLoadEnd={() => setBgLoaded(true)} // Solo cuando termina de cargar
+          onLoadEnd={() => setBgLoaded(true)} // <- Solo cuando termina de cargar
         />
         <View style={styles.whiteOverlay} />
       </View>
@@ -58,12 +54,7 @@ export default function SplashScreen() {
       {/* Logo con animación */}
       <Animated.Image
         source={require('../../assets/logo2.png')}
-        style={[
-          styles.logo,
-          {
-            transform: [{ scale: scaleAnim }],
-          },
-        ]}
+        style={[styles.logo, { transform: [{ scale: scaleAnim }] }]}
         resizeMode="contain"
       />
     </Animated.View>

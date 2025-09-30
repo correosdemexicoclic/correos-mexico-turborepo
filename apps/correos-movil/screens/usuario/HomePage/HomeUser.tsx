@@ -196,22 +196,39 @@ export default function HomeUser() {
     }, [])
   );
 
-  //const progress = useSharedValue<number>(0);
+  const [currentIndex, setCurrentIndex] = React.useState(0);
+  const carouselRef = React.useRef<ScrollView>(null);
+  const carousel2Ref = React.useRef<ScrollView>(null);
 
-  {/*const renderItem = ({ item }) => (
-    <View style={[styles.itemContainer, { backgroundColor: item }]}>
-      <Image source={item.image} style={styles.image} />
+  // Auto scroll para el primer carrusel
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prevIndex) => {
+        const nextIndex = (prevIndex + 1) % imageData.length;
+        carouselRef.current?.scrollTo({
+          x: nextIndex * screenWidth,
+          animated: true,
+        });
+        return nextIndex;
+      });
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const renderCarouselItem = (item: any, index: number) => (
+    <View key={index} style={[styles.carouselItem, { width: screenWidth }]}>
+      <Image source={item.image} style={styles.carouselImage} />
     </View>
-  );*/}
+  );
 
-  //const ref = React.useRef<ICarouselInstance>(null);
-
-  {/*const onPressPagination = (index: number) => {
-    ref.current?.scrollTo({
-      count: index - progress.value,
+  const onPressPagination = (index: number) => {
+    setCurrentIndex(index);
+    carouselRef.current?.scrollTo({
+      x: index * screenWidth,
       animated: true,
     });
-  };*/}
+  };
 
   return (
     <View>
@@ -258,49 +275,36 @@ export default function HomeUser() {
         </View>
 
         <CorreosClicButton />
-        
-        {/*<View id="carousel-component" dataSet={{ kind: "basic-layouts", name: "parallax" }}>
-          <Carousel
-            autoPlayInterval={5000}
-            autoPlay={true}
-            data={imageData}
-            height={screenHeight * 0.22}
-            loop={true}
-            pagingEnabled={true}
-            snapEnabled={true}
-            width={screenWidth}
-            style={{
-              width: screenWidth,
-            }}
-            mode="parallax"
-            modeConfig={{
-              parallaxScrollingScale: 0.9,
-              parallaxScrollingOffset: 50,
-            }}
-            onProgressChange={progress}
-            renderItem={renderItem}
-          />
 
-          <Pagination.Basic<{ color: string }>
-            progress={progress}
-            data={imageData2.map((image) => ({ image }))}
-            size={moderateScale(8)}
-            dotStyle={{
-              borderRadius: 100,
-              backgroundColor: "#D9D9D9",
-            }}
-            activeDotStyle={{
-              borderRadius: 100,
-              overflow: "hidden",
-              backgroundColor: "#DE1484",
-            }}
-            containerStyle={{
-              gap: moderateScale(5),
-            }}
+        <View style={styles.carouselContainer}>
+          <ScrollView
+            ref={carouselRef}
             horizontal
-            onPress={onPressPagination}
-          />
-        </View> */}
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            style={styles.carousel}
+            onScrollEndDrag={(event) => {
+              const newIndex = Math.round(event.nativeEvent.contentOffset.x / screenWidth);
+              setCurrentIndex(newIndex);
+            }}
+          >
+            {imageData.map((item, index) => renderCarouselItem(item, index))}
+          </ScrollView>
+          
+          {/* Pagination dots */}
+          <View style={styles.pagination}>
+            {imageData.map((_, index) => (
+              <TouchableOpacity
+                key={index}
+                style={[
+                  styles.paginationDot,
+                  currentIndex === index && styles.paginationDotActive,
+                ]}
+                onPress={() => onPressPagination(index)}
+              />
+            ))}
+          </View>
+        </View>
 
         <View style={styles.categoriesContainer}>
           <Text style={styles.textCategories}>Categorías</Text>
@@ -355,48 +359,30 @@ export default function HomeUser() {
           </View>
         </View>
 
-        {/*<View id="carousel-component" dataSet={{ kind: "basic-layouts", name: "parallax" }}>
-          <Carousel
-            autoPlayInterval={5000}
-            autoPlay={true}
-            data={imageData2}
-            height={screenHeight * 0.22}
-            loop={true}
-            pagingEnabled={true}
-            snapEnabled={true}
-            width={screenWidth}
-            style={{
-              width: screenWidth,
-            }}
-            mode="parallax"
-            modeConfig={{
-              parallaxScrollingScale: 0.9,
-              parallaxScrollingOffset: 50,
-            }}
-            onProgressChange={progress}
-            renderItem={renderItem}
-          />
-
-          <Pagination.Basic<{ color: string }>
-            progress={progress}
-            data={imageData.map((image) => ({ image }))}
-            size={moderateScale(8)}
-            dotStyle={{
-              borderRadius: 100,
-              backgroundColor: "#D9D9D9",
-            }}
-            activeDotStyle={{
-              borderRadius: 100,
-              overflow: "hidden",
-              backgroundColor: "#DE1484",
-            }}
-            containerStyle={{
-              gap: moderateScale(5),
-            }}
+        <View style={styles.carouselContainer}>
+          <ScrollView
+            ref={carousel2Ref}
             horizontal
-            onPress={onPressPagination}
-          />
-        </View>*/}
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            style={styles.carousel}
+          >
+            {imageData2.map((item, index) => renderCarouselItem(item, index))}
+          </ScrollView>
+          
+          {/* Pagination dots */}
+          <View style={styles.pagination}>
+            {imageData2.map((_, index) => (
+              <View
+                key={index}
+                style={[
+                  styles.paginationDot,
+                  index === 0 && styles.paginationDotActive, // Por defecto el primero
+                ]}
+              />
+            ))}
+          </View>
+        </View>
 
         <View style={styles.featuredProductContainer}>
           <View style={styles.textFeaturedProductContainer}>
@@ -614,5 +600,39 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     alignItems: "center",
     justifyContent: "center"
+  },
+  // Estilos para el carrusel personalizado
+  carouselContainer: {
+    marginVertical: moderateScale(10),
+  },
+  carousel: {
+    height: screenHeight * 0.22,
+  },
+  carouselItem: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: screenHeight * 0.22,
+  },
+  carouselImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+    borderRadius: moderateScale(8),
+  },
+  pagination: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: moderateScale(10),
+  },
+  paginationDot: {
+    width: moderateScale(8),
+    height: moderateScale(8),
+    borderRadius: moderateScale(4),
+    backgroundColor: '#D9D9D9',
+    marginHorizontal: moderateScale(2.5),
+  },
+  paginationDotActive: {
+    backgroundColor: '#DE1484',
   },
 });

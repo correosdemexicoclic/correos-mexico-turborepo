@@ -1,11 +1,9 @@
-/*import React from 'react';
+import React from 'react';
 import {
   View, Text, Image, StyleSheet, Dimensions,
   TouchableOpacity, ScrollView, StatusBar, Platform
 } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
-import Carousel, { Pagination, ICarouselInstance } from 'react-native-reanimated-carousel';
-import Animated, { useSharedValue } from 'react-native-reanimated';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faChevronLeft, faChevronRight, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
@@ -35,19 +33,27 @@ export default function ReviewDetail() {
   const route = useRoute();
   const { review, startIndex = 0 } = route.params as Params;
 
-  // Carrusel
-  const progress = useSharedValue<number>(startIndex);
-  const ref = React.useRef<ICarouselInstance>(null);
-  const data = (review.images?.length ? review.images : [DEFAULT_AVATAR]).map((u, i) => ({
-    id: `img-${i}`,
-    image: { uri: u },
-  }));
+  // Images data
+  const data = (review.images?.length ? review.images : [DEFAULT_AVATAR]);
   const [index, setIndex] = React.useState(startIndex);
+  const carouselRef = React.useRef<ScrollView>(null);
 
-  const renderItem = ({ item }: { item: { id: string; image: any } }) => (
-    <Animated.View style={styles.itemContainer}>
-      <Image source={item.image} style={styles.image} resizeMode="contain" />
-    </Animated.View>
+  const nextImage = () => {
+    const nextIndex = (index + 1) % data.length;
+    setIndex(nextIndex);
+    carouselRef.current?.scrollTo({ x: nextIndex * screenWidth, animated: true });
+  };
+
+  const prevImage = () => {
+    const prevIndex = (index - 1 + data.length) % data.length;
+    setIndex(prevIndex);
+    carouselRef.current?.scrollTo({ x: prevIndex * screenWidth, animated: true });
+  };
+
+  const renderItem = (imageUrl: string, itemIndex: number) => (
+    <View key={itemIndex} style={[styles.itemContainer, { width: screenWidth }]}>
+      <Image source={{ uri: imageUrl }} style={styles.image} resizeMode="contain" />
+    </View>
   );
 
   const renderStars = (n: number) => (
@@ -58,8 +64,8 @@ export default function ReviewDetail() {
     <View style={{ flex: 1, backgroundColor: BG }}>
       <StatusBar barStyle="light-content" backgroundColor={BRAND_PINK} />
 
-      {/* Header rosa con safe-area y título centrado */
-      /*<View style={[styles.safeHeader]}>
+      {/* Header rosa con safe-area y título centrado */}
+      <View style={[styles.safeHeader]}>
         <View style={styles.headerRow}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerIconArea}>
             <FontAwesomeIcon icon={faArrowLeft} size={18} color="#fff" />
@@ -67,54 +73,60 @@ export default function ReviewDetail() {
 
           <Text style={styles.headerTitle}>Opiniones con fotos</Text>
 
-          {/* Spacer derecho del mismo ancho que el botón de atrás para centrar el título */
-          /*<View style={styles.headerIconArea} />
+          {/* Spacer derecho del mismo ancho que el botón de atrás para centrar el título */}
+          <View style={styles.headerIconArea} />
         </View>
       </View>
 
-      {/* Zona de imagen (blanco) */
-      /*<View style={styles.carouselContainer}>
-        <Carousel
-          ref={ref}
-          width={screenWidth}
-          height={verticalScale(430)}
-          data={data}
-          renderItem={renderItem}
-          defaultIndex={startIndex}
-          loop
-          onProgressChange={(_, abs) => {
-            progress.value = abs;
-            setIndex(Math.abs(Math.round(abs)) % data.length);
+      {/* Zona de imagen (blanco) */}
+      <View style={styles.carouselContainer}>
+        <ScrollView
+          ref={carouselRef}
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          style={{ height: verticalScale(430) }}
+          onScrollEndDrag={(event) => {
+            const newIndex = Math.round(event.nativeEvent.contentOffset.x / screenWidth);
+            setIndex(newIndex);
           }}
-        />
+        >
+          {data.map((imageUrl, itemIndex) => renderItem(imageUrl, itemIndex))}
+        </ScrollView>
 
-        {/* Contador 1 / N */
-        /*<View style={styles.counterBox}>
+        {/* Contador 1 / N */}
+        <View style={styles.counterBox}>
           <Text style={styles.counterText}>{`${index + 1} / ${data.length}`}</Text>
         </View>
 
-        <Pagination.Basic
-          progress={progress}
-          data={data}
-          size={scale(8)}
-          dotStyle={styles.dot}
-          activeDotStyle={styles.activeDot}
-          containerStyle={styles.pagination}
-          horizontal
-          onPress={(i) => ref.current?.scrollTo({ count: i - (progress.value ?? 0), animated: true })}
-        />
+        {/* Pagination dots */}
+        <View style={styles.pagination}>
+          {data.map((_, dotIndex) => (
+            <TouchableOpacity
+              key={dotIndex}
+              style={[
+                styles.dot,
+                index === dotIndex && styles.activeDot,
+              ]}
+              onPress={() => {
+                setIndex(dotIndex);
+                carouselRef.current?.scrollTo({ x: dotIndex * screenWidth, animated: true });
+              }}
+            />
+          ))}
+        </View>
 
         {data.length > 1 && (
           <>
             <TouchableOpacity
               style={[styles.navBtn, { left: 10 }]}
-              onPress={() => ref.current?.scrollTo({ count: -1, animated: true })}
+              onPress={prevImage}
             >
               <FontAwesomeIcon icon={faChevronLeft} size={18} />
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.navBtn, { right: 10 }]}
-              onPress={() => ref.current?.scrollTo({ count: 1, animated: true })}
+              onPress={nextImage}
             >
               <FontAwesomeIcon icon={faChevronRight} size={18} />
             </TouchableOpacity>
@@ -122,8 +134,8 @@ export default function ReviewDetail() {
         )}
       </View>
 
-      {/* Panel inferior BLANCO (sin “Es útil” ni menú) */
-      /*<ScrollView style={styles.bottomPanel} contentContainerStyle={{ paddingBottom: 24 }}>
+      {/* Panel inferior BLANCO (sin “Es útil” ni menú) */}
+      <ScrollView style={styles.bottomPanel} contentContainerStyle={{ paddingBottom: 24 }}>
         
 
         <View style={styles.authorRow}>
@@ -195,9 +207,28 @@ const styles = StyleSheet.create({
   },
   counterText: { color: '#fff', fontWeight: '600' },
 
-  dot: { borderRadius: 999, backgroundColor: DOT },
-  activeDot: { borderRadius: 999, backgroundColor: BRAND_PINK },
-  pagination: { position: 'absolute', bottom: moderateScale(12), alignSelf: 'center', zIndex: 10, gap: scale(5) },
+  dot: { 
+    width: scale(8),
+    height: scale(8),
+    borderRadius: scale(4), 
+    backgroundColor: DOT,
+    marginHorizontal: scale(2.5),
+  },
+  activeDot: { 
+    width: scale(8),
+    height: scale(8),
+    borderRadius: scale(4), 
+    backgroundColor: BRAND_PINK,
+    marginHorizontal: scale(2.5),
+  },
+  pagination: { 
+    position: 'absolute', 
+    bottom: moderateScale(12), 
+    alignSelf: 'center', 
+    zIndex: 10, 
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
 
   navBtn: {
     position: 'absolute', top: '50%',
@@ -215,4 +246,4 @@ const styles = StyleSheet.create({
   authorRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 6, marginBottom: 14 },
   avatar: { width: 32, height: 32, borderRadius: 16, backgroundColor: '#eee' },
   authorName: { color: TEXT, fontWeight: '600' },
-}); */
+});
